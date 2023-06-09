@@ -13,7 +13,7 @@ create table monitor_dg_tmp
     user_id INTEGER
         references user
                    on update cascade on delete set null,
-    interval INTEGER default 20 not null,
+    interval INTEGER default 1 not null,
     url TEXT,
     type VARCHAR(20),
     weight INTEGER default 2000,

@@ -149,7 +149,7 @@ class Monitor extends BeanModel {
      * @returns {Promise<LooseObject<any>[]>}
      */
     async getTags() {
-        return await R.getAll("SELECT mt.*, tag.name, tag.color FROM monitor_tag mt JOIN tag ON mt.tag_id = tag.id WHERE mt.monitor_id = ? ORDER BY tag.name", [ this.id ]);
+        return await R.getAll("SELECT mt.*, tag.name, tag.color FROM monitor_tag mt JOIN tag ON mt.tag_id = tag.id WHERE mt.monitor_id = ? ORDER BY tag.name", [this.id]);
     }
 
     /**
@@ -215,14 +215,14 @@ class Monitor extends BeanModel {
 
             let beatInterval = this.interval;
 
-            if (! beatInterval) {
+            if (!beatInterval) {
                 beatInterval = 1;
             }
 
             if (demoMode) {
-                if (beatInterval < 20) {
-                    console.log("beat interval too low, reset to 20s");
-                    beatInterval = 20;
+                if (beatInterval < 1) {
+                    console.log("beat interval too low, reset to 1s");
+                    beatInterval = 1;
                 }
             }
 
@@ -796,7 +796,7 @@ class Monitor extends BeanModel {
 
             previousBeat = bean;
 
-            if (! this.isStop) {
+            if (!this.isStop) {
                 log.debug("monitor", `[${this.name}] SetTimeout for next check.`);
                 this.heartbeatInterval = setTimeout(safeBeat, beatInterval * 1000);
             } else {
@@ -814,7 +814,7 @@ class Monitor extends BeanModel {
                 UptimeKumaServer.errorLog(e, false);
                 log.error("monitor", "Please report to https://github.com/louislam/uptime-kuma/issues");
 
-                if (! this.isStop) {
+                if (!this.isStop) {
                     log.info("monitor", "Try to restart the monitor");
                     this.heartbeatInterval = setTimeout(safeBeat, this.interval * 1000);
                 }
@@ -1069,7 +1069,7 @@ class Monitor extends BeanModel {
 
         } else {
             // Handle new monitor with only one beat, because the beat's duration = 0
-            let status = parseInt(await R.getCell("SELECT `status` FROM heartbeat WHERE monitor_id = ?", [ monitorID ]));
+            let status = parseInt(await R.getCell("SELECT `status` FROM heartbeat WHERE monitor_id = ?", [monitorID]));
 
             if (status === UP) {
                 uptime = 1;
@@ -1219,7 +1219,7 @@ class Monitor extends BeanModel {
         if (tlsInfoObject && tlsInfoObject.certInfo && tlsInfoObject.certInfo.daysRemaining) {
             const notificationList = await Monitor.getNotificationList(this);
 
-            if (! notificationList.length > 0) {
+            if (!notificationList.length > 0) {
                 // fail fast. If no notification is set, all the following checks can be skipped.
                 log.debug("monitor", "No notification, no need to send cert notification");
                 return;
@@ -1228,8 +1228,8 @@ class Monitor extends BeanModel {
             let notifyDays = await setting("tlsExpiryNotifyDays");
             if (notifyDays == null || !Array.isArray(notifyDays)) {
                 // Reset Default
-                setSetting("tlsExpiryNotifyDays", [ 7, 14, 21 ], "general");
-                notifyDays = [ 7, 14, 21 ];
+                setSetting("tlsExpiryNotifyDays", [7, 14, 21], "general");
+                notifyDays = [7, 14, 21];
             }
 
             if (Array.isArray(notifyDays)) {
@@ -1320,7 +1320,7 @@ class Monitor extends BeanModel {
         const maintenanceIDList = await R.getCol(`
             SELECT maintenance_id FROM monitor_maintenance
             WHERE monitor_id = ?
-        `, [ monitorID ]);
+        `, [monitorID]);
 
         for (const maintenanceID of maintenanceIDList) {
             const maintenance = await UptimeKumaServer.getInstance().getMaintenance(maintenanceID);
